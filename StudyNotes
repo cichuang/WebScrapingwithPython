@@ -1,0 +1,853 @@
+Python网络爬虫与信息提取
+学习笔记
+
+
+2020.05.15-
+
+
+目录
+〇、全课程内容导学	4
+0.1 课程目的	4
+0.2 学习内容	4
+0.3 Python语言开发工具选择	4
+0.3.1 文本工具类IDE	4
+0.3.2 集成工具类IDE	4
+一、Requests库	5
+1.1 Requests库的安装测试	5
+1.2 Requests库的7个主要方法	5
+1.2.1 Requests库的get()方法	5
+1.2.2 Requests对象	5
+1.2.3 理解Response的编码	6
+1.3 爬取网页的通用代码框架	7
+1.3.1 理解Requests库的异常	7
+1.3.2 爬取网页的通用代码框架	7
+1.4 HTTP协议及Requests库方法	7
+1.4.1 HTTP协议	7
+1.4.2 HTTP协议对资源的操作	8
+1.4.3 HTTP协议与Requests库	8
+1.5 Requests库主要方法解析	9
+1.5.1 requests.request(method, url, **kwargs)	9
+1.5.2 requests.get(url, params=None, **kwargs)	10
+1.5.3 requests.head(url, **kwargs)	10
+1.5.4 requests.post(url, data=None, json=None, **kwargs)	10
+1.5.5 requests.put(url, data=None, **kwargs)	10
+1.5.6 requests.patch(url, data=None, **kwargs)	10
+1.5.7 requests.detele(url, **kwargs)	10
+二、Robots协议	11
+2.1 网络爬虫引发的问题	11
+2.1.1 网络爬虫的尺寸	11
+2.1.2 网络爬虫引发的问题	11
+2.1.3 网络爬虫的限制	11
+2.2 Robots协议	11
+2.2.1 Robots协议基本语法	11
+2.2.2 Robots协议案例	11
+2.3 Robots协议的遵守方式	12
+2.3.1 Robots协议的使用	12
+2.3.2 对Robots协议的理解	12
+三、Requests库网络爬虫实战	12
+3.1 京东商品页面的爬取	12
+3.2 亚马逊商品页面的爬取	12
+3.3 百度搜索关键词提交	13
+3.4 网络图片的爬取和存储	14
+3.5 IP地址归属地的自动查询	15
+四、Beautiful Soup库入门	15
+4.1 Beautiful Soup库的基本用法	15
+4.2 Beautiful Soup库的基本元素	16
+4.2.1 Beautiful Soup库的理解	16
+4.2.2 Beautiful Soup库的引用	16
+4.2.3 BeautifulSoup类	16
+4.2.4 Beautiful Soup库解析器	16
+4.2.5 BeautifulSoup类的基本元素	17
+4.2.6 BeautifulSoup类的使用方法	18
+4.3 基于bs4库的HTML内容遍历方法	19
+4.3.1 HTML的基本格式	19
+4.3.2 标签树的下行遍历	19
+4.3.3 标签树的上行遍历	20
+4.3.4 标签树的平行遍历	21
+4.4 基于bs4库的HTML格式输出与编码	22
+4.4.1 bs4库的prettify()方法	22
+4.4.2 bs4库的编码	23
+五、信息标记与提取方法	23
+5.1 信息标记的三种形式	23
+5.1.1 HTML的信息标记	23
+5.1.2 XML	23
+5.1.3 JSON	23
+5.1.4 YAML	24
+5.2 三种信息标记形式的比较	24
+
+
+
+〇、全课程内容导学
+0.1 课程目的
+掌握定向网络爬取和网页解析的基本能力。
+0.2 学习内容
+Requests库	自动爬取HTML页面，自动网络请求提交。
+Beautiful Soup库	解析HTML页面，提取相关信息。
+Projects	实战项目。
+正则表达式库	提取页面关键信息。
+Scrapy库	网络爬虫原理介绍，专业爬虫框架介绍。
+0.3 Python语言开发工具选择
+IDE：集成开发环境，编写、调试和发布程序的工具。
+常用的IDE分为文本工具类和集成工具类两大类。
+文本工具类IDE	`集成工具类IDE
+IDLE	PyCharm
+Sublime Text	Anaconda & Spyder
+Notepad++	Visual Studio & PTVS
+Vim & Emacs	PyDev & Eclipse
+Atom	Wing
+Komodo Edit	Canopy
+0.3.1 文本工具类IDE
+IDLE：Python自带的、默认的、常用的、入门级编写工具，分为交互式和文件式两种格式。在交互式中，可以提交一行或多行语句，立即看到结果；在文件式中，可像其他编辑器一样编写程序。IDLE适用于Python入门，功能简单直接，300行以内代码。
+Sublime Text：专为程序员开发的第三方专用编程工具，拥有专业编程体验，多种编程风格。
+0.3.2 集成工具类IDE
+(1)通用类型
+Wing：公司维护的收费工具，调试功能丰富，提供版本控制、版本同步功能，适合多人共同开发。
+Visual Studio & PTVS：微软公司维护，以Windows开发环境为主，调试功能丰富。
+Eclipse：免费开源工具，最初为Java程序员开发的IDE，提供众多自定义功能，操作较复杂，需要拥有一定开发经验。
+PyCharm：社区版免费，专业版收费。简单，集成度高，适合编写较复杂的工程。
+(2)科学计算&数据分析
+Canopy：公司维护的收费工具，支持近500个第三方库，适合科学计算领域应用开发。
+Anacoda：免费开源工具，支持近800个第三方库。
+以上两个编辑器由同一个人主持开发，他也是Numpy、Scipy两个科学计算库的重要贡献者。
+一、Requests库
+1.1 Requests库的安装测试
+抓取百度主页。
+>>> import requests
+>>> r = requests.get('http://www.baidu.com')
+>>> print(r.status_code)
+>>> r.encoding = 'utf-8'
+>>> r.text
+1.2 Requests库的7个主要方法
+方法	说明
+requests.request()	构造一个请求，支撑以下各方法的基础方法。
+requests.get()	获取HTML网页的主要方法，对应于HTTP的GET。
+requests.head()	获取HTML网页头信息的方法，对应于HTTP的HEAD。
+requests.post()	向HTML网页提交POST请求的方法，对应于HTTP的POST。
+requests.put()	向HTML网页提交PUT请求的方法，对应于HTTP的PUT。
+requests.patch()	向HTML网页提交局部修改请求，对应于HTTP的PATCH。
+requests.delete()	向HTML网页提交删除请求，对应于HTTP的DELETE。
+1.2.1 Requests库的get()方法
+requests.get(url, params=None, **kwargs)
+url：拟获取页面的URL链接；
+params：URL中的额外参数，字典或字节流格式，可选；
+**kwargs：12个控制访问的参数。
+两个重要对象：
+构造一个向服务器请求资源的Request对象，包含爬虫返回的内容；
+返回一个包含服务器资源的Response对象。
+1.2.2 Requests对象
+>>> import requests
+>>> r = requests.get('http://www.baidu.com')
+>>> print(r.status_code)    #r.status_code检测请求的状态码。若状态码=200，访问成功；否则访问失败。
+200
+>>> type(r)    #返回r的类型
+<class 'requests.models.Response'>
+>>> r.headers    #返回get()请求获得页面的头部信息
+{'Cache-Control': 'private, no-cache, no-store, proxy-revalidate, no-transform', 'Connection': 'keep-alive', 'Content-Encoding': 'gzip', 'Content-Type': 'text/html', 'Date': 'Sat, 16 May 2020 18:45:36 GMT', 'Last-Modified': 'Mon, 23 Jan 2017 13:27:36 GMT', 'Pragma': 'no-cache', 'Server': 'bfe/1.0.8.18', 'Set-Cookie': 'BDORZ=27315; max-age=86400; domain=.baidu.com; path=/', 'Transfer-Encoding': 'chunked'}
+Response对象的属性：
+属性	说明
+r.status_code	HTTP请求的返回状态。200表示链接成功，404表示失败。
+r.text	HTTP响应内容的字符串形式，即URL对应的页面内容。
+r.encoding	从HTTP header中猜测的响应内容编码方式。
+r.apparent_encoding	从内容中分析出的响应内容编码方式（备选编码方式）。
+r.content	HTTP响应内容的二进制形式。
+使用get()方法获得网络资源的基本流程：
+r.status_code
+200	404或其他
+r.text	某些原因出错，将产生异常，
+r.encoding	
+r.apparent_encoding	
+r.content	
+实例1.2.2：
+>>> import requests
+>>> r = requests.get('http://www.baidu.com')
+>>> r.status_code
+200
+>>> r.text
+'<!DOCTYPE html>\r\n<!--STATUS OK--><html> <head><meta http-equiv=content-type content=text/html;charset=utf-8><meta http-equiv=X-UA-Compatible content=IE=Edge><meta content=always name=referrer><link rel=stylesheet type=text/css href=http://s1.bdstatic.com/r/www/cache/bdorz/baidu.min.css><title>ç\x99¾åº¦ä¸\x80ä¸\x8bï¼\x8cä½\xa0å°±ç\x9f¥é\x81\x93</title></head> <body link=#0000cc> <div id=wrapper> <div id=head> <div class=head_wrapper> <div class=s_form> <div class=s_form_wrapper> <div id=lg>
+>>> r.encoding
+'ISO-8859-1'
+>>> r.apparent_encoding
+'utf-8'
+>>> r.encoding = 'utf-8'    #用备选编码替换原有编码
+>>> r.text
+'<!DOCTYPE html>\r\n<!--STATUS OK--><html> <head><meta http-equiv=content-type content=text/html;charset=utf-8><meta http-equiv=X-UA-Compatible content=IE=Edge><meta content=always name=referrer><link rel=stylesheet type=text/css href=http://s1.bdstatic.com/r/www/cache/bdorz/baidu.min.css><title>百度一下，你就知道</title></head> <body link=#0000cc> <div id=wrapper> <div id=head> <div class=head_wrapper> <div class=s_form> <div class=s_form_wrapper> <div id=lg>
+1.2.3 理解Response的编码
+r.encoding	从HTTP header中猜测的响应内容编码方式。
+r.apparent_encoding	从内容中分析出的响应内容编码方式（备选编码方式）。
+r.encoding：根据HTTP header中的charset字段获得的编码方式；如果header中不存在charset，则认为编码为ISO-8859-1。r.text根据r.encoding显示网页内容。
+r.apparent_encoding：根据网页内容分析出的编码方式。可以看作是r.encoding的备选，更加准确。
+1.3 爬取网页的通用代码框架
+1.3.1 理解Requests库的异常
+异常	说明
+requests.ConnectionError	网络连接错误异常，如DNS查询失败、拒绝连接等。
+requests.HTTPError	HTTP错误异常。
+requests.URLRequired	URL缺失异常。
+requests.TooManyRedirects	超过最大重定向次数，产生重定向异常。
+requests.ConnectTimeout	连接远程服务器超时异常。（仅在连接时超时异常）
+requests.Timeout	请求URL超时，产生超时异常。（从发出URL请求到获得内容整个过程中产生异常）
+r.raise_for_status()	如果不是200，产生异常requests.HTTPError。
+r.raise_for_status()在方法内部判断r.status_code是否等于200，不需要增加额外的if语句，该语句便于利用try-except进行异常处理。
+1.3.2 爬取网页的通用代码框架
+import requests
+def getHTMLText(url):
+	try:
+		r = requests.get(url, timeout = 30)
+		r.raise_for_status()
+		r.encoding = r.apparent_encoding
+		return r.text
+	except:
+		return '产生异常'
+if __name_ == '__main__':
+	url = 'heep://www.baidu.com'
+	print(getHTMLText(url))
+﹟if __name__ == '__main__' 
+每个python模块都包含内置的变量__name__。当该模块被作为脚本直接执行时，__name__ 等于文件名（包含后缀.py）；当该模块被import到其他脚本中作为模块调用时，__name__等于模块名称（不包含后缀.py）。
+而__main__始终指当前执行模块的名称（包含后缀.py）。当该模块被作为脚本直接执行时，__name__ == 'main' 结果为真。
+在 if __name__ == 'main': 下方的代码只有被作为脚本直接执行时才会被执行，而被import 到其他脚本中作为模块调用时不会被执行。
+1.4 HTTP协议及Requests库方法
+1.4.1 HTTP协议
+HTTP，Hypertext Transfer Protocol，超文本传输协议。
+HTTP是一个基于“请求与响应”模式的、无状态的应用层协议。“请求与响应”模式指用户发出请求，服务器做出响应；无状态指任何两次请求之间无关联；应用层协议指该协议工作在TCP协议之上。
+HTTP协议采用URL作为定位网络资源的标识，URL格式：http://host[:port][path].
+host：合法的Internet主机域名或IP地址；
+port：端口号，缺省端口为80；
+path：请求资源的路径。
+HTTP URL实例：
+http://www.bit.edu.cn
+http://220.181.111.118/duty，在该IP主机上duty目录下的资源。
+HTTP URL的理解：
+URL是通过HTTP协议存取资源的Internet路径，一个URL对应一个数据资源。
+1.4.2 HTTP协议对资源的操作
+方法	说明
+GET	请求获取URL位置的资源。
+HEAD	请求获取URL位置资源的响应消息报告，即获得该资源的头部信息。
+POST	请求向URL位置的资源后附加新的数据。
+PUT	请求向URL位置存储一个资源，覆盖原URL位置的资源。
+PATCH	请求局部更新URL位置的资源，即改变该处资源的部分内容。
+DELETE	请求删除URL位置存储的资源。
+GET和HEAD是从云端流向用户的操作，POST、PUT、PATCH和DELETE是从用户流向云端的操作。
+通过URL和命令管理资源，操作独立无状态，网络通道及服务器成为了黑盒子。
+理解PATCH和PUT的区别：PATCH仅需提交局部更新请求，节省网络带宽；PUT则必须将所有字段一并提交更新请求，未提交的字段将被删除。
+1.4.3 HTTP协议与Requests库
+HTTP协议方法	Requests库方法	功能一致性
+GET	requests.get()	一致
+HEAD	requests.head()	一致
+POST	requests.post()	一致
+PUT	requests.put()	一致
+PATCH	requests.patch()	一致
+DELETE	requests.delete()	一致
+Requests库的head()方法：可使用很少的网络流量获得大量网络信息。
+>>> r = requests.head('http://httpbin.org/get')
+>>> r.headers
+{'Date': 'Sun, 17 May 2020 17:00:53 GMT', 'Content-Type': 'application/json', 'Content-Length': '307', 'Connection': 'keep-alive', 'Server': 'gunicorn/19.9.0', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Credentials': 'true'}
+>>> r.text    #结果为空
+''
+Requests库的post()方法：向URL POST一个字典/键值对，自动编码为form（表单），即默认存储在表单的字段下。
+>>> payload = {'key1':'value1','key2':'value2'}
+>>> r = requests.post('http://httpbin.org/post',data = payload)
+>>> print(r.text)
+{…
+  "form": {
+    "key1": "value1", 
+    "key2": "value2"
+  }, 
+…
+}
+向URL POST一个字符串，自动编码为data。
+>>> r = requests.post('http://httpbin.org/post',data = 'ABC')
+>>> print(r.text)
+{…
+  "data": "ABC", 
+  "files": {}, 
+  "form": {}, 
+…
+}
+Requests库的put ()方法与post()方法类似，但会将原有数据覆盖掉。
+1.5 Requests库主要方法解析
+1.5.1 requests.request(method, url, **kwargs)
+(1)method：请求方式，对应get/put/post等7种。
+r = requests.request(‘GET’, url, **kwargs)
+r = requests.request(‘HEAD’, url, **kwargs)
+r = requests.request(‘POST’, url, **kwargs)
+r = requests.request(‘PUT’, url, **kwargs)
+r = requests.request(‘PATCH’, url, **kwargs)
+r = requests.request(‘delete’, url, **kwargs)
+r = requests.request(‘OPTIONS’, url, **kwargs)    #向服务器获取服务器与客户端相关联的参数，不与获取资源直接相关，使用较少。
+(2)url：拟获取页面的url链接。
+(3)**kwargs：控制访问的参数，共13个。
+params：字典或字节序列，作为参数增加到url中。
+>>> kv = {'key1':'value1','key2':'value2'}
+>>> r = requests.request('GET', 'http://python123.io/ws', params = kv)
+>>> print(r.url)
+https://python123.io/ws?key1=value1&key2=value2    #?后面为添加内容kv
+data：字典、字节序列或文件对象，作为Request的内容。
+>>> kv = {'key1':'value1','key2':'value2'}
+>>> r = requests.request('POST', 'http://python123.io/ws', data = kv)
+>>> body = '主体内容'
+>>> r = requests.request('POST', 'http://python123.io/ws', data = body)
+json：JSON格式的数据，作为Request的内容，
+>>> kv = {'key1':'value1'}
+>>> r = requests.request('POST', 'http://python123.io/ws', json = kv)
+headers：字典，HTTP定制头。对应向某URL访问时所发起的HTTP头字段。
+>>> hd = {'user-agent':'Chrome/10'}
+>>> r = requests.request('POST', 'http://python123.io/ws', headers = hd)
+cookies：字典或CookieJar，Request中的cookie。
+auth：元组，支持HTTP认证功能。
+files：字典类型，传输文件。
+>>> fs = {'file': open('data.xls', 'rb')}
+>>> r = requests.request('POST', 'http://python123.io/ws', file = fs)
+timeout：设定超时时间，秒为单位。
+>>> r = requests.request('GET', 'http://www.baidu.com', time = 10)
+proxies：字典类型，设定访问代理服务器，可以增加登录认证。访问HTTP时使用代理服务器的IP地址，可有效隐藏用户爬取网页时的源的IP地址信息，防止对爬虫的逆追踪。
+>>> pxs = {'http': 'http://user:pass@10.10.1:1234'
+       'https': 'https://10.10.10.10.1:4321'}
+>>> r = requests.request('GET', 'http://www.baidu.com', proxies = pxs)
+allow_redirects：True/False，默认为True，重定向开关。
+stream：True/False，默认为True，获取内容立即下载开关。
+verify：True/False，默认为True，认证SSL证书开关。
+cert：本地SSL证书路径。
+1.5.2 requests.get(url, params=None, **kwargs)
+url：拟获取页面的url链接。
+params：url中的额外参数，字典或字节流格式，可选。
+**kwargs：12个控制访问的参数。除params外的requests.request()的12个参数。
+1.5.3 requests.head(url, **kwargs)
+url：拟获取页面的url链接。
+**kwargs：13个控制访问的参数。与requests.request()完全一样。
+1.5.4 requests.post(url, data=None, json=None, **kwargs)
+url：拟更新页面的url链接。
+data：字典、字节序列或文件，Request的内容。
+json：JSON格式的数据，Request的内容。
+**kwargs：11个控制访问的参数。
+1.5.5 requests.put(url, data=None, **kwargs)
+url：拟更新页面的url链接。
+data：字典、字节序列或文件，Request的内容。
+**kwargs：12个控制访问的参数。
+1.5.6 requests.patch(url, data=None, **kwargs)
+url：拟更新页面的url链接。
+data：字典、字节序列或文件，Request的内容。
+**kwargs：12个控制访问的参数。
+1.5.7 requests.detele(url, **kwargs)
+url：拟删除页面的url链接。
+**kwargs：13个控制访问的参数。
+二、Robots协议
+2.1 网络爬虫引发的问题
+2.1.1 网络爬虫的尺寸
+爬取网页，玩转网页：小规模，数据量小，爬取速度不敏感。（Requests库）
+爬取网站，爬取系列网站：中规模，数据规模大，爬取速度敏感。（Scrapy库）
+爬取全网：大规模，搜索引擎，爬取速度关键。（定制开发）
+2.1.2 网络爬虫引发的问题
+性能骚扰：Web服务器默认接受人类访问，受限于编写水平和目的，网络爬虫将会为Web服务器带来巨大的资源开销。
+法律风险：服务器上的数据有产权归属，网络爬虫获取数据后牟利将带来法律风险。
+隐私泄露：网络爬虫可能具备突破简单访问控制的能力，获得被保护数据，从而泄漏个人隐私。
+2.1.3 网络爬虫的限制
+来源审查：判断User-Agent进行限制。
+检查来访HTTP协议头的User-Agent域，只响应浏览器或友好爬虫的访问。
+发布公告：Robots协议。
+告知所有爬虫网站的爬取策略，要求爬虫遵守。
+2.2 Robots协议
+Robots Exclusion Standard，网络爬虫排除标准。
+作用：网站告知网络爬虫哪些页面可以抓取，哪些不行。
+形式：在网站根目录下的robots.txt文件。
+2.2.1 Robots协议基本语法
+第一行非注释内容是User-Agent:，说明具体哪些爬虫需要遵守规则。
+规则Allow:或Disallow;，说明是否允许爬虫访问网站的该部分内容。如果一条规则后面跟着一个与之矛盾的规则，则按后一条规则执行。
+#注释，/代表根目录，*代表所有。*是通配符，可用于User-Agent，也可用于URL链接中。
+2.2.2 Robots协议案例
+京东：https://www.jd.com/robots.txt
+User‐agent: *
+Disallow: /?*
+Disallow: /pop/*.html
+Disallow: /pinpai/*.html?*
+User‐agent: EtaoSpider
+Disallow: /
+User‐agent: HuihuiSpider
+Disallow: /
+User‐agent: GwdangSpider
+Disallow: /
+User‐agent: WochachaSpider
+Disallow: /
+百度：http://www.baidu.com/robots.txt
+新浪新闻：http://news.sina.com.cn/robots.txt
+QQ：http://www.qq.com/robots.txt
+QQ新闻：http://news.qq.com/robots.txt
+教育部：http://www.moe.edu.cn/robots.txt （无robots协议）
+2.3 Robots协议的遵守方式
+2.3.1 Robots协议的使用
+网络爬虫：自动或人工识别robots.txt，再进行内容爬取。
+约束性：Robots协议是建议但非约束性，网络爬虫可以不遵守，但存在法律风险。
+2.3.2 对Robots协议的理解
+爬取网页，玩转网页：访问量很小，可以遵守；访问量较大，建议遵守。
+爬取网站，爬取系列网站：非商业且偶尔，建议遵守；商业利益，必须遵守。
+爬取全网：必须遵守。
+原则：类人类行为（访问量小，不对服务器早餐巨大影响，与人类访问行为类似），可不参考Robots协议。
+三、Requests库网络爬虫实战
+3.1 京东商品页面的爬取
+>>> import requests
+>>> r = requests.get('https://item.jd.com/2967929.html')
+>>> r.status_code
+200
+>>> r.encoding
+‘gbk’
+>>> r.text[:1000]
+全代码：
+import requests
+url = 'https://item.jd.com/2967929.html'
+try:
+	r = requests.get(url)
+	r.raise_for_status()
+	r.encoding = r.apparent_encoding
+	print(r.text[:1000])
+except:
+	print('爬取失败。')
+3.2 亚马逊商品页面的爬取
+>>> import requests
+>>> r = requests.get('https://www.amazon.cn/gp/product/B01M8L5Z3Y')
+>>> r.status_code
+503
+>>> r.encoding
+'ISO-8859-1'
+>>> r.encoding = r.apparent_encoding
+>>> r.text
+<h2>意外错误</h2>\n      </div>\n      <br>\n      <div style="width:500px;margin:0 auto;text-align:left;"><font color="red">抱歉，由于程序执行时，遇到意外错误，您刚刚操作没有执行成功，请稍后重试。或将此错误报告给我们的客服中心：<a href="mailto:service_bj@cs.amazon.cn">service_bj@cs.amazon.cn</a></font><br><br>推荐您<a href="javascript:history.back(1)">返回上一页</a>，确认您的操作无误后，再继续其他操作。    #访问出现错误，错误由API造成
+>>> r.request.headers    #查看发送给亚马逊的request头部内容
+{'User-Agent': 'python-requests/2.23.0', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive'}    #爬虫信息表明本次访问由Python的Requests库的程序产生，亚马逊对此类来源不正常或进行了审查
+>>> kv = {'user-agent':'Mozilla/5.0'}      #构造键值对，重新定义user-agent为Mozilla/5.0浏览器信息
+>>> url = 'https://www.amazon.cn/gp/product/B01M8L5Z3Y'
+>>> r = requests.get(url, headers = {'user-agent':'Mozilla/5.0'})    #修改headers字段的user-agent
+>>> r.status_code
+200
+>>> r.request.headers
+{'user-agent': 'Mozilla/5.0', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive'}
+>>> r.text[:1000]
+全代码：
+import requests
+url = 'https://www.amazon.cn/gp/product/B01M8L5Z3Y'
+try:
+	kv = {'user-agent':'Mozilla/5.0'}
+	r = requests.get(url, headers = kv) 
+	r.raise_for_status()
+	r.encoding = r.apparent_encoding
+	print(r.text[1000: 2000])
+except:
+	print('爬取失败。')
+3.3 百度搜索关键词提交
+百度的关键词接口：http://www.baidu.com/s?wd=keyword
+>>> import requests
+>>> kv = {'wd': 'Python'}
+>>> r = requests.get('http://www.baidu.com/s', params = kv)
+>>> r.status_code
+200
+>>> r.request.url    #发给百度的request信息对应的URL
+'https://wappass.baidu.com/static/captcha/tuxing.html?&ak=c27bbc89afca0463650ac9bde68ebe06&backurl=https%3A%2F%2Fwww.baidu.com%2Fs%3Fwd%3DPython&logid=11616396613425965118&signature=1b6719b9dff27a18540ef1a0b8e05268&timestamp=1591202203'
+>>> len(r.text)
+1519
+全代码：
+import requests
+keyword = 'Python'
+try:
+	kv = {'wd', keyword}
+	r = request.get('http://www.baidu.com/s', params = kv)
+	print(r.request.url)
+	r.raise_for_status()
+	print(len(r.text))
+except:
+	print('爬取失败。')
+3.4 网络图片的爬取和存储
+网络图片链接的格式：http://www.example.com/picture.jpg
+选择一个图片Web页面：http://www.nationalgeographic.com.cn/photography/photo_of_the_day/3921.html
+>>> import requests
+>>> path = 'D://abc.jpg'
+>>> url = http://img0.dili360.com/ga/M00/4A/60/wKgBy1qo8bmAPw85AAeR_nypR7c832.tub.jpg@!rw17'
+>>> r = requests.get(url)
+>>> r.status_code
+200
+>>> with open(path, 'wb') as f:    #打开文件，并将其定义为文件标识符f
+	f.write(r.content)    #r.content表示返回内容的二进制形式，f.write将二进制形式写入文件
+184783
+>>> f.close    #将文件关闭
+<built-in method close of _io.BufferedWriter object at 0x0000028AEF5A1930>
+全代码：
+import requests
+import os
+url = 'http://img0.dili360.com/ga/M02/4A/60/wKgBy1qo7euAcFDHAASbsD0G3j0768.tub.jpg'
+root = 'E://pictures//'
+path = root + url.split('/')[-1]    #文件名称：根目录+URL链接中以“/”分隔的最后一部分（即图片原名称）
+try:
+	if not os.path.exists(root):
+		os.mkdir(root)    #如果根目录不存在，创建根目录
+	if not os.path.exists(path):
+		r = requests.get(url) 
+		with open(path, 'wb') as f:
+			f.write(r.content)
+			f.close()
+			print('文件保存成功。')
+	else:
+		print('文件已存在。')
+except:
+	print('爬取失败。')
+3.5 IP地址归属地的自动查询
+IP138网站：http://m.ip138.com/ip.asp?ip=ipaddress
+通过ip=ipaddress的形式，将ipaddress作为参数提交到网页中，网页会根据参数返回数据内容，即该地址对应的物理位置。
+>>> import requests
+>>> url = 'http://m.ip138.com/ip.asp?ip=ipaddress'
+>>> r = requests.get(url + '202.204.80.112')
+>>> r.status_code
+200
+>>> r.text[-500:]    #当URL链接返回的内容特别多时，r.text会导致IDLE失效，检测返回数据时应约束范围，如[0:100]、[-500:].
+全代码：
+import requests
+url = 'http://m.ip138.com/ip.asp?ip='
+try:
+	r = requests.get(url + '202.204.80.112')
+	r.rais_for_status()
+	r.encoding = r.apparent_encoding
+	print(r.text[-500:])
+except:
+	print('爬取失败。')
+四、Beautiful Soup库入门
+4.1 Beautiful Soup库的基本用法
+手动获取demo.html源代码，浏览器右键“查看源代码”。 
+或者用Requests库获取demo.html源代码：
+>>> import requests
+>>> r = requests.get('http://python123.io/ws/demo.html')
+>>> r.text
+'<html><head><title>This is a python demo page
+>>> demo = r.text
+>>> from bs4 import BeautifulSoup    #BeautifulSoup4简写为bs4.
+>>> soup = BeautifulSoup(demo, 'html.parser')    # html.parser为demo的解释器，对demo进行html的解析。
+>>> print(soup.prettify())
+<html>
+ <head>
+  <title>
+   This is a python demo page
+  </p>
+ </body>
+</html>
+Beautiful Soup库的基本用法：
+from bs4 import BeautifulSoup    #BeautifulSoup是一类，注意首字母大写。
+soup = BeautifulSoup('<p>data</p>', 'html.parser')
+4.2 Beautiful Soup库的基本元素
+4.2.1 Beautiful Soup库的理解
+HTML文件源代码是由一组尖括号构成的标签组织起来的，标签之间存在上下游关系，形成标签树。
+<html>
+<body>
+<p class=“title”> … </p>
+</body>
+</html>
+Beautiful Soup库是解析、遍历、维护标签树的功能库。
+、<p class=“title”>…</p>
+<p>…</p>：标签对 Tag；
+p：名称 Name，成对出现；
+class=“title”：属性 Attributes，键值对，0个或多个。
+4.2.2 Beautiful Soup库的引用
+Beautiful Soup库，也叫beautifulsoup4或bs4.
+约定引用方式如下，即主要是用BeautifulSoup类。
+from bs4 import BeautifulSoup
+import bs4
+4.2.3 BeautifulSoup类
+HTML文档 == 标签树 == BeautifulSoup类
+>>> from bs4 import BeautifulSoup
+>>> soup = BeautifulSoup('<html>data</html>', 'html.parser')
+>>> soup2 = BeautifulSoup(open(‘D://demo.html’), 'html.parser')
+BeautifulSoup类对应一个HTML/XML文档的全部内容。
+4.2.4 Beautiful Soup库解析器
+解析器	使用方法	条件
+bs4的HTML解析器	BeautifulSoup(mk, ‘html.parser’)	安装bs4库
+lxml的HTML解析器	BeautifulSoup(mk, ‘lxml’)	pip install lxml
+lxml的XML解析器	BeautifulSoup(mk, ‘xml’)	pip install lxml
+html5lib的解析器	BeautifulSoup(mk, ‘html5lib’)	pip install html5lib
+4.2.5 BeautifulSoup类的基本元素
+<p class=“title”>…</p>
+基本元素	说明
+Tag	标签，最基本的信息组织单元，分别用<>和</>表明开头和结尾。
+Name	标签的名字，<p>…</p>的名字是‘p’，格式：<tag>.name
+Attributes	标签的属性，字典形式组织，格式：<tag>.attrs
+NavigableString	标签内非属性字符串，<>…</>中字符串，格式：<tag>.string
+Comment	标签内字符串的注释部分，一种特殊的Comment类型。
+回顾demo.html：
+>>> import requests
+>>> r = requests.get('http://python123.io/ws/demo.html')
+>>> demo = r.text
+>>> demo
+'<html><head><title>This is a python demo page</title></head>\r\n<body>\r\n<p class="title"><b>The demo python introduces several python courses.</b></p>\r\n<p class="course">Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:\r\n<a href="http://www.icourse163.org/course/BIT-268001" class="py1" id="link1">Basic Python</a> and <a href="http://www.icourse163.org/course/BIT-1001870001" class="py2" id="link2">Advanced Python</a>.</p>\r\n</body></html>'
+(1)Tag 标签
+>>> from bs4 import BeautifulSoup
+>>> soup = BeautifulSoup(demo, 'html.parser')
+>>> soup.title
+<title>This is a python demo page</title>
+>>> tag = soup.a
+>>> tag
+<a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1">Basic Python</a>
+任何存在于HTML语法中的标签都可以用soup.<tag>访问获得。当HTML文档中存在多个相同<tag>对应内容时，soup.<tag>返回第一个。
+(2)Tag的name（名字）
+>>> soup.a.name
+'a'
+>>> soup.a.parent.name
+'p'
+>>> soup.a.parent.parent.name
+'body'
+每个<tag>都有自己的名字，通过<tag>.name获取，字符串类型。
+(3)Tag的attrs（属性）
+>>> tag = soup.a
+>>> tag.attrs
+{'href': 'http://www.icourse163.org/course/BIT-268001', 'class': ['py1'], 'id': 'link1'}    #打印字典，字典中给出标签与标签属性组成的键值对。
+>>> tag.attrs['class']
+['py1']
+>>> tag.attrs['href']
+'http://www.icourse163.org/course/BIT-268001'
+>>> type(tag.attrs)    #标签属性是字典类型。
+<class 'dict'>
+>>> type(tag)
+<class 'bs4.element.Tag'>    #标签是bs4定义的标签类型。
+一个<tag>可以有0或多个属性，字典类型。属性为0个时，获得空字典。
+(4)Tag的NavigableString
+>>> soup.a
+<a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1">Basic Python</a>
+>>> soup.a.string
+'Basic Python'
+>>> soup.p
+<p class="title"><b>The demo python introduces several python courses.</b></p>    #p标签中包含一个b标签。
+>>> soup.p.string
+'The demo python introduces several python courses.'
+>>> type(soup.p.string)
+<class 'bs4.element.NavigableString'>    #打印p标签时未返回b标签内容。
+NavigableString可以跨越多个层次。
+(5)Tag的Comment（注释）
+>>> newsoup = BeautifulSoup('<b><!--This is a comment--></b><p>This is not a comment</p>', 'html.parser')    #<!表示标签的开始。
+>>> newsoup.b.string
+'This is a comment'
+>>> type(newsoup.b.string)
+<class 'bs4.element.Comment'>
+>>> newsoup.p.string
+'This is not a comment'
+>>> type(newsoup.p.string)
+<class 'bs4.element.NavigableString'>
+Comment是一种特殊类型。
+4.2.6 BeautifulSoup类的使用方法
+<p class=“title”>…</p>
+<tag>	标签
+<tag>.name	名称
+<tag>.attrs	属性
+<tag>.string	非属性字符串/注释
+4.3 基于bs4库的HTML内容遍历方法
+4.3.1 HTML的基本格式
+<html>
+<head>
+<title>This is a python demo page</title>
+</head>
+<body>
+<p class="title">
+<b>The demo python introduces several python courses.</b>
+</p>
+<p class=“course”>Python is a wonderful general‐purpose programming language.You can learn Python from novice to professional by tracking the following courses:
+<a href="http://www.icourse163.org/course/BIT‐268001" class="py1"id="link1">Basic Python</a> and
+<a href="http://www.icourse163.org/course/BIT‐1001870001" class="py2"id="link2">Advanced Python</a>.
+</p>
+</body>
+</html>
+<>…</>构成了从属关系。
+
+4.3.2 标签树的下行遍历
+属性	说明
+.content	子节点的列表，将<tag>所有儿子节点存入列表。
+.children	子节点的迭代类型，与.content类似，用于循环遍历儿子节点。
+.descendants	子孙节点的迭代类型，包含所有子孙节点，用于循环遍历。
+BeautifulSoup类型是标签树的根节点。
+>>> soup = BeautifulSoup(demo, 'html.parser')
+>>> soup.head
+<head><title>This is a python demo page</title></head>
+>>> soup.head.contents
+[<title>This is a python demo page</title>]
+>>> soup.body.contents
+['\n', <p class="title"><b>The demo python introduces several python courses.</b></p>, '\n', <p class="course">Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:
+
+<a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1">Basic Python</a> and <a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2">Advanced Python</a>.</p>, '\n']
+
+>>> len(soup.body.contents)
+5
+>>> soup.body.contents[1]
+<p class="title"><b>The demo python introduces several python courses.</b></p>
+遍历儿子节点：
+for child in soup.head.contents:
+print(child)
+遍历子孙节点：
+for child in soup.body.descendants:
+print(child)
+4.3.3 标签树的上行遍历
+属性	说明
+.parent	节点的父亲标签。
+.parents	节点先辈标签的迭代类型，用于循环遍历先辈节点。
+
+>>> soup.body.contents[1]
+<p class="title"><b>The demo python introduces several python courses.</b></p>
+>>> soup = BeautifulSoup(demo, 'html.parser')
+>>> soup.title.parent
+<head><title>This is a python demo page</title></head>
+>>> soup.html.parent
+<html><head><title>This is a python demo page</title></head>
+<body>
+</body></html>
+>>> soup.parent
+>>>
+遍历所有先辈节点，包括soup本身，所以要区别判断.
+>>> soup = BeautifulSoup(demo, 'html.parser')
+>>> for parent in soup.a.parents:
+	if parent is None:
+		print(parent)
+	else:
+		print(parent.name)
+p
+body
+html
+[document]
+4.3.4 标签树的平行遍历
+属性	说明
+.next_sibling	返回按照HTML文本顺序的下一个平行节点标签。
+.previous_sibling	返回按照HTML文本顺序的上一个平行节点标签。
+.next_siblings	迭代类型，返回按照HTML文本顺序的后续所有平行节点标签。
+.previou_siblings	迭代类型，返回按照HTML文本顺序的前续所有平行节点标签。
+
+>>> soup = BeautifulSoup(demo, 'html.parser')
+>>> soup.a.next_sibling
+' and '
+>>> soup.a.next_sibling.next_sibling
+<a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2">Advanced Python</a>
+>>> soup.a.previous_sibling
+'Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:\r\n'
+>>> soup.a.previous_sibling.previous_sibling    #a标签的前一个平行节点的前一个平行节点是空信息
+>>> soup.a.parent
+<p class="course">Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:
+<a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1">Basic Python</a> and <a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2">Advanced Python</a>.</p>
+遍历后续节点：
+for sibling in soup.a.next_sibling:
+    print(sibling)
+遍历前续节点：
+for sibling in soup.a.previous_sibling:
+    print(sibling)
+
+4.4 基于bs4库的HTML格式输出与编码
+4.4.1 bs4库的prettify()方法
+>>> soup.prettify()
+'<html>\n <head>\n  <title>\n   This is a python demo page\n  </title>\n </head>\n <body>\n  <p class="title">\n   <b>\n    The demo python introduces several python courses.\n   </b>\n  </p>\n  <p class="course">\n   Python is a wonderful general-purpose programming language. You can learn Python from novice to professional by tracking the following courses:\n   <a class="py1" href="http://www.icourse163.org/course/BIT-268001" id="link1">\n    Basic Python\n   </a>\n   and\n   <a class="py2" href="http://www.icourse163.org/course/BIT-1001870001" id="link2">\n    Advanced Python\n   </a>\n   .\n  </p>\n </body>\n</html>'
+>>> print(soup.prettify())
+<html>
+ <head>
+  <title>
+   This is a python demo page
+  </title>
+ </head>
+.prettify()为HTML文本<>及其内容增加’\n’。
+.prettify()也可用于标签，方法：<tag>.prettify()
+>>> print(soup.a.prettify())
+<html>
+ <head>
+  <title>
+4.4.2 bs4库的编码
+bs4库将任何HTML输入都变成utf-8编码。
+>>> soup = BeautifulSoup('<p>中文</p>', 'html.parser')
+>>> soup.p.string
+'中文'
+>>> print(soup.p.prettify())
+<p>
+ 中文
+</p>
+五、信息标记与提取方法
+5.1 信息标记的三种形式
+标记后的信息形成信息组织结构，增加了信息维度。
+标记的结构和信息一样具有重要价值。
+标记后的信息可用于通信、存储或展示，更利于程序理解和运用。
+5.1.1 HTML的信息标记
+HTML是WWW的信息组织方式，它将声音、图像、视频等超文本的信息嵌入到文本当中。
+HTML：Hyper、Text、Makeup、Language.
+HTML通过预定义的<>...</>标签形式组织不同类型的信息。
+国际公认的信息标记有三种形式：XML、JSON、YAML.
+5.1.2 XML
+扩展标记语言，eXtensible Markup Language.
+<img src='china.jpg' size='10'>...</img>
+标签Tag：<img src='china.jpg' size='10'>...</img>
+名称Name：img
+属性Attribute：src='china.jpg' size='10'
+XML的信息标记形式：
+标签有内容	<name>...</name>
+标签没有内容	<name />
+注释	<!-- -->
+5.1.3 JSON
+JaveScript中对面向对象信息的表达形式，JavaScript Object Notation.
+(1)由有类型的键值对key:value构建。
+键和值都需要增加双引号，表示为字符串；数字不用加双引号。
+"name":"河南大学"
+(2)当值中包含多个内容时，用[“ ”,“ ”]表示值。
+"name":["河南大学", "国立河南大学"]
+(3)键值对可以用{,}嵌套使用。
+"name":{
+	"newname":"河南大学",
+	"oldname":"国立河南大学"
+}
+JSON的信息标记形式：
+有类型的键值对	"key":"value"
+值中包含多个内容	"key":["value1", "value2"]
+键值对可以嵌套	"key":{"subkey":"subvalue"}
+5.1.4 YAML
+YAML Ain't Markup Language
+(1)由无类型的键值对key:value构建。
+键和值不加双引号。
+"name":"河南大学"
+(2)用缩进表达所属关系。
+name:
+	newname:河南大学
+	oldname:国立河南大学
+(3)用-表达所属关系。
+name:
+-河南大学
+-国立河南大学
+(4)用|表整块数据，用#表示注释。
+text:|    #学校介绍
+一大段文字
+YAML的信息标记形式：
+无类型的键值对	key:value
+用#表示注释，用-表达所属关系	key:    #注释
+-value1
+-value2
+键值对可以嵌套	key:
+subkey:subvalue
+5.2 三种信息标记形式的比较
+XML实例：
+<person>
+	<firstName>Tangyu</firstName>
+	<lastName>Huang</lastName>
+	<address>
+		<streetAddr>yangguangyuan<streetAddr>
+		<city>南京市</city>
+		<zipcode>476600</zipcode>
+	</address>
+	<prof>Computer System</prof><prof>Security</prof>
+</person>
+JSON实例：
+{
+	"firstName" : "Tangyu",
+	"lastName" : "Huang",
+	"address" : {
+					"streetAddr" : "阳光苑",
+					"city" : "南京市",
+					"zipcode" : "476600"
+				},
+	"prof" : ["Computer System", "Security"]
+}
+YAML实例：
+firstName : Tangyu
+lastName : Huang
+address : 
+	streetAddr : 阳光苑
+	city : 南京市
+	zipcode : 476600
+prof :
+-Computer System
+-Security
+三种信息标记形式的比较：
+	说明	适用场景
+XML	最早的通用信息标记语言，可扩展性好，但繁琐。	Internet上的信息交互与传递。
+JSON	信息有类型，适合程序处理(js)，较XML简洁。	移动应用云端和节点的信息通信，无注释。
+YAML	信息无类型，文本信息比例最高，可读性好。	各类系统的配置文件，有注释易读
+
+
+
